@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мессенджер</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="chat-wrapper">
+    <div class="user-list">
+        <h3>Пользователи</h3>
+        <ul id="userList">
+            <!-- Список пользователей будет здесь -->
+            <li>User 1</li>
+            <li>User 2</li>
+            <li>User 3</li>
+        </ul>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Мессенджер</h2>
+        </div>
+
+        <div class="messages" id="messages">
+            <!-- Сообщения будут выводиться здесь -->
+            <div class="message sent">
+                <span class="username">User1</span>: <span class="message-text">Hello, how are you?</span>
+            </div>
+            <div class="message received">
+                <span class="username">User2</span>: <span class="message-text">I'm good, thanks! How about you?</span>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Напишите сообщение..." />
+            <button id="sendBtn">Отправить</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
