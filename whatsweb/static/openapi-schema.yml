@@ -1,0 +1,317 @@
+swagger: '2.0'
+info:
+  title: Messenger API
+  description: Документация для мессенджера
+  contact:
+    email: contact@myapi.com
+  license:
+    name: MIT License
+  version: v1
+host: 127.0.0.1:8000
+schemes:
+- http
+basePath: /
+consumes:
+- application/json
+produces:
+- application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+- Basic: []
+paths:
+  /chats/:
+    get:
+      operationId: chats_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ChatSerializers'
+      tags:
+      - chats
+    parameters: []
+  /chats/create/:
+    post:
+      operationId: chats_create_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChatSerializers'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/ChatSerializers'
+      tags:
+      - chats
+    parameters: []
+  /chats/{chat_id}/messages/:
+    get:
+      operationId: chats_messages_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MessageSerializers'
+      tags:
+      - chats
+    parameters:
+    - name: chat_id
+      in: path
+      required: true
+      type: string
+  /chats/{id}/delete/:
+    delete:
+      operationId: chats_delete_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+      - chats
+    parameters:
+    - name: id
+      in: path
+      description: A unique integer value identifying this chat.
+      required: true
+      type: integer
+  /chats/{id}/edit/:
+    put:
+      operationId: chats_edit_update
+      description: ''
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/ChatSerializers'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/ChatSerializers'
+      tags:
+      - chats
+    patch:
+      operationId: chats_edit_partial_update
+      description: ''
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/ChatSerializers'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/ChatSerializers'
+      tags:
+      - chats
+    parameters:
+    - name: id
+      in: path
+      description: A unique integer value identifying this chat.
+      required: true
+      type: integer
+  /messages/send/:
+    post:
+      operationId: messages_send_create
+      description: ''
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/MessageSerializers'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/MessageSerializers'
+      tags:
+      - messages
+    parameters: []
+  /messages/{id}/delete/:
+    put:
+      operationId: messages_delete_update
+      description: ''
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/MessageSerializers'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/MessageSerializers'
+      tags:
+      - messages
+    patch:
+      operationId: messages_delete_partial_update
+      description: ''
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/MessageSerializers'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/MessageSerializers'
+      tags:
+      - messages
+    parameters:
+    - name: id
+      in: path
+      description: A unique integer value identifying this message.
+      required: true
+      type: integer
+  /messages/{id}/edit/:
+    put:
+      operationId: messages_edit_update
+      description: ''
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/MessageSerializers'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/MessageSerializers'
+      tags:
+      - messages
+    patch:
+      operationId: messages_edit_partial_update
+      description: ''
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/MessageSerializers'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/MessageSerializers'
+      tags:
+      - messages
+    parameters:
+    - name: id
+      in: path
+      description: A unique integer value identifying this message.
+      required: true
+      type: integer
+  /users/:
+    get:
+      operationId: users_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserSerializers'
+      tags:
+      - users
+    parameters: []
+definitions:
+  UserSerializers:
+    required:
+    - username
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      username:
+        title: Username
+        description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+          only.
+        type: string
+        pattern: ^[\w.@+-]+$
+        maxLength: 150
+        minLength: 1
+  ChatSerializers:
+    required:
+    - name
+    - participants
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      name:
+        title: Name
+        type: string
+        maxLength: 255
+        minLength: 1
+      is_group:
+        title: Is group
+        type: boolean
+      participants:
+        type: array
+        items:
+          $ref: '#/definitions/UserSerializers'
+      last_message:
+        title: Last message
+        type: string
+        readOnly: true
+  MessageSerializers:
+    required:
+    - chat
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      chat:
+        title: Chat
+        type: string
+        format: uri
+      sender:
+        $ref: '#/definitions/UserSerializers'
+      text:
+        title: Text
+        type: string
+        x-nullable: true
+      created_at:
+        title: Created at
+        type: string
+        format: date-time
+        readOnly: true
+      edited_at:
+        title: Edited at
+        type: string
+        format: date-time
+        x-nullable: true
+      is_deleted:
+        title: Is deleted
+        type: boolean
