@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import generics, permissions
 from rest_framework.exceptions import PermissionDenied
@@ -7,6 +8,10 @@ from rest_framework.views import APIView
 
 from .models import Chat, Message
 from .serializers import ChatSerializers, MessageSerializers, UserSerializers
+
+
+def messenger(request):
+    return render(request, 'messenger.html')
 
 
 class ChatCreateView(APIView):
@@ -172,3 +177,14 @@ class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializers
     permission_classes = [permissions.IsAuthenticated]
+
+
+class CurrentUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            'user_id': user.id,
+            'username': user.username
+        })

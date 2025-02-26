@@ -13,4 +13,7 @@ urlpatterns = [
     path("messages/<int:pk>/delete/", MessageDeleteView.as_view(), name="message-delete"),
 
     path("users/", UserListView.as_view(), name="user-list"),
+    path('current_user/', CurrentUserView.as_view(), name='current_user'),
+
+    path("messenger/", messenger, name='messenger')
 ]
