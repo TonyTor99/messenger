@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мессенджер</title>
+    {% load static %}
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+</head>
+<body>
+<div class="chat-wrapper">
+    <div class="user-list">
+        <h3 id="toggleUsers">Пользователи</h3>
+        <ul id="userList" class="hidden">
+            <!-- Список пользователей-->
+        </ul>
+        <h3 id="toggleChats">Чаты</h3>
+        <ul id="chatList" class="hidden">
+            <li id="createGroupChat" style="background-color: #b12626">Создать групповой чат</li>
+            <!-- Список чатов -->
+        </ul>
+
+        <div class="modal" id="createChatModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Создать групповой чат</h3>
+                </div>
+
+                <div>
+                    <label for="chatName" style="color: #007bff">Название чата:</label>
+                    <input type="text" id="chatName" class="form-input" placeholder="Введите название чата" />
+                </div>
+
+                <div>
+                    <label style="color: #007bff">Выберите участников:</label>
+                    <ul id="userListModal" class="user-list-modal">
+                        <!-- Добавление пользователей -->
+                    </ul>
+                </div>
+
+                <div class="modal-footer">
+                    <button id="createChatBtn">Создать чат</button>
+                    <button id="editChatBtn" style="display: none;">Изменить</button>
+                    <button id="closeModalBtn">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2 id="chat-head">Мессенджер</h2>
+        </div>
+
+        <div class="messages" id="messages">
+            <!-- Сообщения -->
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Напишите сообщение..." />
+            <button id="sendBtn">Отправить</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'scripts/script.js' %}"></script>
+</body>
+</html>

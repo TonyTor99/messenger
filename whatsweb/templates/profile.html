@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    {% load static %}
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet" />
+</head>
+<body>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>User Profile</h1>
+    </div>
+
+    <div class="profile-content">
+        <div class="profile-avatar">
+            <img id="avatar" src="{% if profile.avatar %}{{ profile.avatar.url }}{% else %}{% static 'avatars/default_avatar.jpg' %}{% endif %}" alt="Avatar" class="avatar">
+            <input type="file" id="avatarInput" class="avatar-input" accept="image/*">
+            <button id="changeAvatarBtn" class="btn">Change Avatar</button>
+        </div>
+
+        <div class="profile-info">
+            <label for="username" class="label">Username:</label>
+            <input type="text" id="username" value="Current Username" class="input-field" disabled>
+
+            <button id="editBtn" class="btn">Edit</button>
+            <button id="saveBtn" class="btn" style="display: none;">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'scripts/script_profile.js' %}"></script>
+</body>
+</html>

@@ -3,15 +3,21 @@ from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import generics, permissions
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Chat, Message
-from .serializers import ChatSerializers, MessageSerializers, UserSerializers
+from .models import Chat, Message, UserProfile
+from .serializers import ChatSerializers, MessageSerializers, UserSerializers, ProfileSerializers
 
 
 def messenger(request):
     return render(request, 'messenger.html')
+
+
+def profile(request):
+    user_profile = UserProfile.objects.get(user=request.user)
+    return render(request, 'profile.html', {'profile': user_profile})
 
 
 class ChatCreateView(APIView):
@@ -21,21 +27,18 @@ class ChatCreateView(APIView):
         data = request.data
         chat_name = data.get('name', 'Чат')
         is_group = data.get('is_group', False)
-        user_ids = data.get('users', [])  # Получаем список участников
+        user_ids = data.get('users', [])
 
         if not user_ids:
             return Response({"error": "Необходимо указать хотя бы одного участника"}, status=400)
 
-        # Для группового чата нужно добавить всех участников
         if is_group:
-            users = User.objects.filter(id__in=user_ids)  # Получаем всех пользователей по списку ID
+            users = User.objects.filter(id__in=user_ids)
         else:
-            # Для личного чата проверяем наличие второго участника
             if len(user_ids) != 1:
                 return Response({"error": "Для личного чата необходимо указать только одного участника"}, status=400)
-            users = [User.objects.get(id=user_ids[0])]  # Получаем одного участника
+            users = [User.objects.get(id=user_ids[0])]
 
-        # Проверяем, существует ли уже такой чат
         if not is_group:
             existing_chat = Chat.objects.filter(
                 participants=request.user
@@ -48,13 +51,10 @@ class ChatCreateView(APIView):
             if existing_chat:
                 return Response(ChatSerializers(existing_chat).data)
 
-        # Создаем новый чат
         chat = Chat.objects.create(is_group=is_group, name=chat_name)
 
-        # Добавляем участников
         chat.participants.add(request.user, *users)
 
-        # Для группового чата добавляем администратора (создателя)
         if is_group:
             chat.admins.add(request.user)
         else:
@@ -77,7 +77,7 @@ class ChatUpdateView(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        chat_id = self.request.data.get("chat_id")
+        chat_id = self.kwargs.get('pk')
         chat = generics.get_object_or_404(Chat, id=chat_id)
 
         if self.request.user not in chat.participants.all():
@@ -179,6 +179,11 @@ class UserListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializers
+
+
 class CurrentUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -188,3 +193,32 @@ class CurrentUserView(APIView):
             'user_id': user.id,
             'username': user.username
         })
+
+
+class ProfileListView(generics.ListAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = ProfileSerializers
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class ProfileUpdateView(generics.UpdateAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = ProfileSerializers
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class AvatarUpdateView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def patch(self, request, *args, **kwargs):
+        user_profile = UserProfile.objects.get(user=request.user)
+        if 'avatar' in request.FILES:
+            user_profile.avatar = request.FILES['avatar']
+            user_profile.save()
+            avatar_url = user_profile.avatar.url if user_profile.avatar else None
+
+            return Response({
+                'message': 'Avatar updated successfully',
+                'avatar_url': avatar_url
+            })
+        return Response({'message': 'No avatar provided'}, status=400)

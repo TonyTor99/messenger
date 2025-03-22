@@ -9,12 +9,6 @@ class UserSerializers(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'username']
 
 
-class UserProfileSerializers(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = ['user', 'avatar']
-
-
 class MessageSerializers(serializers.ModelSerializer):
     chat_id = serializers.PrimaryKeyRelatedField(queryset=Chat.objects.all())
     sender = UserSerializers(read_only=True)
@@ -29,7 +23,7 @@ class MessageSerializers(serializers.ModelSerializer):
 
 
 class ChatSerializers(serializers.HyperlinkedModelSerializer):
-    participants = UserSerializers(many=True)
+    participants = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True)
     last_message = serializers.SerializerMethodField()
 
     class Meta:
@@ -39,3 +33,11 @@ class ChatSerializers(serializers.HyperlinkedModelSerializer):
     def get_last_message(self, obj):
         last_msg = obj.messages.filter(is_deleted=False).order_by('-created_at').first()
         return MessageSerializers(last_msg).data if last_msg else None
+
+
+class ProfileSerializers(serializers.HyperlinkedModelSerializer):
+    user = serializers.HyperlinkedRelatedField(view_name='user-detail', queryset=User.objects.all())
+
+    class Meta:
+        model = UserProfile
+        fields = ['id', 'avatar', 'display_name', 'user']

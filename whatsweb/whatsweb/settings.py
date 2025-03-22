@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os.path
 from pathlib import Path
 
+from environs import env
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -34,10 +36,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'channels',
     'msger',
     'rest_framework',
     'drf_yasg',
@@ -123,6 +127,9 @@ STATIC_URL = 'static/'
 if DEBUG:
     STATICFILES_DIRS = [BASE_DIR / "static"]
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -137,8 +144,16 @@ LOGIN_URL = '/accounts/login/'
 ACCOUNT_EMAIL_REQUIRED = False
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_LOGIN_METHODS = ['username']
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 LOGIN_REDIRECT_URL = '/messenger/'
-LOGOUT_REDIRECT_URL = '/messenger/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+ASGI_APPLICATION = 'whatsweb.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
